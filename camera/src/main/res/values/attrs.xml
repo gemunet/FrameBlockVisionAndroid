@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FinderGraphicOverlay">
+        <attr name="finder_aspectRatio" format="string" />
+        <attr name="finder_margin" format="dimension" />
+        <attr name="finder_color" format="color" />
+        <attr name="finder_maskColor" format="color" />
+        <attr name="finder_cornerRadius" format="dimension" />
+
+        <attr name="finder_gravity">
+            <flag name = "top" value = "1" />
+            <flag name = "left" value = "2" />
+            <flag name = "bottom" value = "4" />
+            <flag name = "right" value = "8" />
+            <flag name = "center" value = "15" />
+        </attr>
+
+        <attr name="finder_shape">
+            <enum name="rectangle" value="0" />
+            <enum name="circle" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,3 @@
+[submodule "fbvnative"]
+	path = fbvnative
+	url = https://github.com/gemunet/fbvnative.git

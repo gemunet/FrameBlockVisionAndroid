@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         btnCardTools.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, CardToolActivity.class);
+                Intent intent = new Intent(MainActivity.this, QuadToolActivity.class);
                 startActivity(intent);
             }
         });
@@ -36,7 +36,16 @@ public class MainActivity extends AppCompatActivity {
         btnImageTools.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ImageToolActivity.class);
+                Intent intent = new Intent(MainActivity.this, ImageBlurrinesActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button btnImageWarp = findViewById(R.id.btnImageWarp);
+        btnImageWarp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ImageWarpActivity.class);
                 startActivity(intent);
             }
         });

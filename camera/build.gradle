@@ -1,8 +1,11 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 apply plugin: 'com.novoda.bintray-release'
 
 ext {
-    versionName = '1.0.0'
+    mvnGroupId = 'lab.glogic.frameblock'
+    mvnArtifactId = 'vision-camera'
+    mvnVersionName = '1.1.0'
 }
 
 buildscript {
@@ -17,11 +20,25 @@ buildscript {
 publish {
     userOrg = 'gemunet'
     repoName = 'frameblock'
-    groupId = 'lab.glogic.frameblock'
-    artifactId = 'vision-camera'
-    publishVersion = versionName
-    repository = 'https://github.com/gemunet/lab.glogic.common.git'
+    groupId = mvnGroupId
+    artifactId = mvnArtifactId
+    publishVersion = mvnVersionName
+    repository = 'https://github.com/gemunet/FrameBlockVisionAndroid.git'
     desc = 'Camera Android library'
+}
+
+publishing {
+    repositories {
+        mavenLocal()
+    }
+    publications {
+        maven(MavenPublication) {
+            groupId mvnGroupId
+            artifactId mvnArtifactId
+            version mvnVersionName
+            artifact("$buildDir/outputs/aar/$project.name-release.aar")
+        }
+    }
 }
 
 android {
@@ -33,7 +50,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
-        versionName versionName
+        versionName mvnVersionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -57,4 +74,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     api 'com.google.android.gms:play-services-vision:9.4.0'
     implementation project(path: ':image')
+//    implementation project(path: ':fbvnative') //FIXME
 }

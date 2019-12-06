@@ -9,10 +9,11 @@ import com.google.android.gms.vision.Frame;
 
 import frameblock.vision.camera.FinderGraphicOverlay;
 import frameblock.vision.camera.PreviewUtil;
-import frameblock.vision.card.Card;
+import frameblock.vision.geometric.Polygon;
+import frameblock.vision.geometric.QuadrilateralDetector;
 import frameblock.vision.image.YuvUtil;
 
-public class CardDetector extends Detector<Card> {
+public class CardDetector extends Detector<Polygon> {
     private FinderGraphicOverlay mOverlay;
     private Context mContext;
     private Frame frame;
@@ -23,10 +24,11 @@ public class CardDetector extends Detector<Card> {
     }
 
     @Override
-    public SparseArray<Card> detect(Frame frame) {
+    public SparseArray<Polygon> detect(Frame frame) {
+        //System.out.println("getFormat:" + frame.getMetadata().getFormat());
         this.frame = frame;
 
-        SparseArray<Card> foos = new SparseArray<>();
+        SparseArray<Polygon> foos = new SparseArray<>();
 
         byte[] yuvImage = frame.getGrayscaleImageData().array();
         Rect yuvRect = new Rect(0, 0, frame.getMetadata().getWidth(), frame.getMetadata().getHeight());
@@ -37,9 +39,11 @@ public class CardDetector extends Detector<Card> {
             yuvRect = new Rect(0, 0, yuvRect.height(), yuvRect.width());
         }
 
-        Card card = frameblock.vision.card.CardDetector.detectLargestCard(yuvImage, yuvRect.width(), yuvRect.height(), roi, null);
-        if(card != null) {
-            foos.append(0, card);
+        //System.out.println("yuvImage Len:" + yuvImage.length + ", w:" + yuvRect.width() + ", h:" + yuvRect.height());
+
+        Polygon polygon = QuadrilateralDetector.detectLargestQuad(yuvImage, yuvRect.width(), yuvRect.height(), roi, null);
+        if(polygon != null) {
+            foos.append(0, polygon);
         }
         return foos;
     }

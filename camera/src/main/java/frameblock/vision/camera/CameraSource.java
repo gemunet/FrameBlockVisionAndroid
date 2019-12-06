@@ -21,7 +21,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.ImageFormat;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
@@ -591,6 +590,20 @@ public class CameraSource {
     }
 
     /**
+     * Toggle FlashLight
+     * @return true if FlashLight is set On, false if otherwise
+     */
+    public boolean toggleFlashLight() {
+        if(getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH)) {
+            setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            return false;
+        } else {
+            setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            return true;
+        }
+    }
+
+    /**
      * Starts camera auto-focus and registers a callback function to run when
      * the camera is focused.  This method is only valid when preview is active
      * (between {@link #start()} or {@link #start(SurfaceHolder)} and before {@link #stop()} or {@link #release()}).
@@ -780,8 +793,6 @@ public class CameraSource {
             } else {
                 Log.i(TAG, "Camera focus mode: " + mFocusMode + " is not supported on this device.");
             }
-
-            //setCenteredFocusArea(parameters);
         }
 
         // setting mFocusMode to the one set in the params
@@ -800,6 +811,9 @@ public class CameraSource {
 
         // setting mFlashMode to the one set in the params
         mFlashMode = parameters.getFlashMode();
+
+        // extra params
+        setExtraParams(parameters);
 
         camera.setParameters(parameters);
 
@@ -821,21 +835,7 @@ public class CameraSource {
         return new CameraPreviewCallback();
     }
 
-    private void setCenteredFocusArea(Camera.Parameters params) {
-        List<Camera.Area> focusList = new ArrayList<Camera.Area>();
-        Camera.Area focusArea = new Camera.Area(new Rect(-100, -100, 100, 100), 1000);
-        focusList.add(focusArea);
-
-        if(params.getMaxNumFocusAreas() > 0) {
-            Log.i(TAG, "Foco establecido al area central de la imagen.");
-            params.setFocusAreas(focusList);
-        }
-
-        if(params.getMaxNumMeteringAreas() > 0) {
-            Log.i(TAG, "Metering establecido al area central de la imagen.");
-            params.setMeteringAreas(focusList);
-        }
-    }
+    protected void setExtraParams(Camera.Parameters params) {}
 
     /**
      * Gets the id for the camera specified by the direction it is facing.  Returns -1 if no such

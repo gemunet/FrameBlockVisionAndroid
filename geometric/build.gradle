@@ -4,7 +4,7 @@ apply plugin: 'com.novoda.bintray-release'
 
 ext {
     mvnGroupId = 'lab.glogic.frameblock'
-    mvnArtifactId = 'vision-image'
+    mvnArtifactId = 'vision-geometric'
     mvnVersionName = '1.1.0'
 }
 
@@ -24,7 +24,7 @@ publish {
     artifactId = mvnArtifactId
     publishVersion = mvnVersionName
     repository = 'https://github.com/gemunet/FrameBlockVisionAndroid.git'
-    desc = 'Image Android library'
+    desc = 'Geometric Android library'
 }
 
 publishing {
@@ -45,13 +45,15 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.1"
 
+
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
-        versionName mvnVersionName
+        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -60,6 +62,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {

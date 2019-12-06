@@ -107,7 +107,7 @@ public class FinderGraphicOverlay<T extends GraphicOverlay.Graphic> extends Grap
             mFinderRoi.top = mScreenSize.top+mMargin;
 
             if(mAspectRatio > 0) {
-                mFinderRoi.bottom = (int)(mFinderRoi.width() / mAspectRatio)+mMargin;
+                mFinderRoi.bottom = (int)(mFinderRoi.width() / mAspectRatio)+mFinderRoi.top;
             } else {
                 mFinderRoi.bottom = mScreenSize.bottom-mMargin;
             }
@@ -121,7 +121,6 @@ public class FinderGraphicOverlay<T extends GraphicOverlay.Graphic> extends Grap
             else {
                 mFinderRoi.offsetTo(mFinderRoi.left, mScreenSize.centerY()-mFinderRoi.height()/2);
             }
-
         }
         // landscape
         else {
@@ -130,7 +129,7 @@ public class FinderGraphicOverlay<T extends GraphicOverlay.Graphic> extends Grap
             mFinderRoi.left = mScreenSize.left+mMargin;
 
             if(mAspectRatio > 0) {
-                mFinderRoi.right = (int)(mFinderRoi.height() * mAspectRatio)+mMargin;
+                mFinderRoi.right = (int)(mFinderRoi.height() * mAspectRatio)+mFinderRoi.left;
             } else {
                 mFinderRoi.right = mScreenSize.right-mMargin;
             }
@@ -179,5 +178,13 @@ public class FinderGraphicOverlay<T extends GraphicOverlay.Graphic> extends Grap
 
         return new Rect((int)(mFinderRoi.left/sw), (int)(mFinderRoi.top/sh),
                 (int)(mFinderRoi.right/sw), (int)(mFinderRoi.bottom/sh));
+    }
+
+    /**
+     * get finder area in view coordinates
+     * @return
+     */
+    public Rect getFinder() {
+        return mFinderRoi;
     }
 }

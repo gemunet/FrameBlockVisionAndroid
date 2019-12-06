@@ -109,7 +109,7 @@ public class CameraSourcePreview extends ViewGroup {
             mSurfaceAvailable = true;
             try {
                 startIfReady();
-                requestLayout();
+                requestLayout(); //TODO: ver como evitar esa llamada
             } catch (IOException e) {
                 Log.e(TAG, "Could not start camera source.", e);
             }
@@ -127,6 +127,7 @@ public class CameraSourcePreview extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        //System.out.println("onLayout " + new Rect(left, top, right, bottom));
         int previewWidth = 320;
         int previewHeight = 240;
         if (mCameraSource != null) {
@@ -171,6 +172,7 @@ public class CameraSourcePreview extends ViewGroup {
         for (int i = 0; i < getChildCount(); ++i) {
             // One dimension will be cropped.  We shift child over or up by this offset and adjust
             // the size to maintain the proper aspect ratio.
+            //System.out.println("getChildAt(i).layout " + new Rect(-1 * childXOffset, -1 * childYOffset, childWidth - childXOffset, childHeight - childYOffset));
             getChildAt(i).layout(
                     -1 * childXOffset, -1 * childYOffset,
                     childWidth - childXOffset, childHeight - childYOffset);

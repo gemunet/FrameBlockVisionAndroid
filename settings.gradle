@@ -1,1 +1,1 @@
-include ':app', ':camera', ':card', ':image', ':fbvnative'
+include ':app', ':camera', ':image', ':fbvnative', ':geometric'

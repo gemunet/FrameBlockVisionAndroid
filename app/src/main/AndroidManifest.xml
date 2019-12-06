@@ -12,9 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ImageToolActivity"></activity>
+        <activity android:name=".ImageWarpActivity"></activity>
+        <activity android:name=".ImageBlurrinesActivity" />
         <activity android:name=".CameraToolActivity" />
-        <activity android:name=".CardToolActivity" />
+        <activity android:name=".QuadToolActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

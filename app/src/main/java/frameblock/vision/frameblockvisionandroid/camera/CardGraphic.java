@@ -6,15 +6,15 @@ import android.graphics.Paint;
 import android.graphics.Point;
 
 import frameblock.vision.camera.GraphicOverlay;
-import frameblock.vision.card.Card;
+import frameblock.vision.geometric.Polygon;
 
 public class CardGraphic extends GraphicOverlay.Graphic {
-    private Card mCard;
+    private Polygon mPolygon;
     private Paint mPaint;
 
-    public CardGraphic(GraphicOverlay overlay, Card card) {
+    public CardGraphic(GraphicOverlay overlay, Polygon polygon) {
         super(overlay);
-        this.mCard = card;
+        this.mPolygon = polygon;
 
         mPaint = new Paint();
         mPaint.setColor(Color.RED);
@@ -24,7 +24,7 @@ public class CardGraphic extends GraphicOverlay.Graphic {
 
     @Override
     public void draw(Canvas canvas) {
-        Point[] pts = mCard.getCornerPoints();
+        Point[] pts = mPolygon.getCornerPoints();
         float[] points = {
                 translateX(pts[0].x), translateY(pts[0].y), translateX(pts[1].x), translateY(pts[1].y),
                 translateX(pts[1].x), translateY(pts[1].y), translateX(pts[2].x), translateY(pts[2].y),

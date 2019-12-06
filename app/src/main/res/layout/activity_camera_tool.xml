@@ -17,7 +17,7 @@
             app:finder_margin="10dp"
             app:finder_color="@color/finder_color"
             app:finder_maskColor="@color/finder_maskColor"
-            app:finder_aspectRatio="1.58"
+            app:finder_aspectRatio="1.57"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

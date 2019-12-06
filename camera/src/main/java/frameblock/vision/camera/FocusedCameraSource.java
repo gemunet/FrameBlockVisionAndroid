@@ -3,14 +3,20 @@ package frameblock.vision.camera;
 import android.content.Context;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.util.Log;
 
 import com.google.android.gms.vision.Detector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import frameblock.vision.image.YuvUtil;
 
 public class FocusedCameraSource extends CameraSource {
 
-    private static final float MIN_FOCUS_SCORE = 6;
+    private static final String TAG = "FocusedCameraSource";
+
+    private static final float MIN_FOCUS_SCORE = 12;
 
     private long mAutoFocusStartedAt;
     private long mAutoFocusCompletedAt;
@@ -23,32 +29,56 @@ public class FocusedCameraSource extends CameraSource {
         return new CameraPreviewCallback();
     }
 
+    @Override
+    protected void setExtraParams(Camera.Parameters params) {
+        setCenteredFocusArea(params);
+    }
+
+    private void setCenteredFocusArea(Camera.Parameters params) {
+        List<Camera.Area> focusList = new ArrayList<Camera.Area>();
+        Camera.Area focusArea = new Camera.Area(new Rect(-100, -100, 100, 100), 1000);
+        focusList.add(focusArea);
+
+        if(params.getMaxNumFocusAreas() > 0) {
+            Log.i(TAG, "Foco establecido al area central de la imagen.");
+            params.setFocusAreas(focusList);
+        }
+
+        if(params.getMaxNumMeteringAreas() > 0) {
+            Log.i(TAG, "Metering establecido al area central de la imagen.");
+            params.setMeteringAreas(focusList);
+        }
+    }
+
     /**
      * Called when the camera has a new preview frame.
      */
     private class CameraPreviewCallback implements Camera.PreviewCallback {
         @Override
-        public void onPreviewFrame(byte[] data, Camera camera) {
+        public void onPreviewFrame(final byte[] data, Camera camera) {
+            if(isAutoFocusing()) { return; }
 
             int centerX = getPreviewSize().getWidth()/3;
             int centerY = getPreviewSize().getHeight()/3;
             Rect roi = new Rect(centerX, centerY, centerX*2, centerY*2);
             float score = YuvUtil.nativeFocusScore(data, getPreviewSize().getWidth(), getPreviewSize().getHeight(), roi);
 
+            //Log.d("FOCUSED", "score:"+score);
             if (score < MIN_FOCUS_SCORE) {
-                if(!isAutoFocusing()) {
-                    mAutoFocusStartedAt = System.currentTimeMillis();
-                    camera.autoFocus(new Camera.AutoFocusCallback() {
-                        @Override
-                        public void onAutoFocus(boolean success, Camera camera) {
-                            mAutoFocusCompletedAt = System.currentTimeMillis();
-                        }
-                    });
-                }
-                camera.addCallbackBuffer(data);
+
+                mAutoFocusStartedAt = System.currentTimeMillis();
+                camera.autoFocus(new Camera.AutoFocusCallback() {
+                    @Override
+                    public void onAutoFocus(boolean success, Camera camera) {
+                        mAutoFocusCompletedAt = System.currentTimeMillis();
+                        camera.addCallbackBuffer(data);
+                    }
+                });
+
             } else {
                 mFrameProcessor.setNextFrame(data, camera);
             }
+
         }
     }
 

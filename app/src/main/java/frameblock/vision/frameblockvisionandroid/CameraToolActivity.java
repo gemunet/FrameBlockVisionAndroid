@@ -31,6 +31,7 @@ import java.io.IOException;
 import frameblock.vision.camera.CameraSource;
 import frameblock.vision.camera.CameraSourcePreview;
 import frameblock.vision.camera.FinderGraphicOverlay;
+import frameblock.vision.camera.FocusedCameraSource;
 import frameblock.vision.camera.PreviewUtil;
 import frameblock.vision.frameblockvisionandroid.camera.CardDetector;
 import frameblock.vision.frameblockvisionandroid.camera.CardProcessor;
@@ -199,22 +200,22 @@ public class CameraToolActivity extends AppCompatActivity {
         CardProcessor mProcessor = new CardProcessor(mGraphicOverlay);
         detector.setProcessor(mProcessor);
 
-//        mCameraSource = new FocusedCameraSource.Builder(context, detector) //detector
-//                //.setRequestedPreviewSize(1024, 768)
-//                .setRequestedPreviewSize(1600, 1024) //-> resuelve 1280, 720 A6 y 1080x1440 S5
-//                //.setRequestedPreviewSize(1280, 720) //default 1024x768 1280x720, 320x240
-//                .setRequestedFps(15.0f) //60.0f 15.0f
-//                .build();
-
-        mCameraSource = new CameraSource.Builder(context, detector) //detector
-                .setFacing(CameraSource.CAMERA_FACING_BACK)
+        mCameraSource = new FocusedCameraSource.Builder(context, detector) //detector
                 //.setRequestedPreviewSize(1024, 768)
                 .setRequestedPreviewSize(1600, 1024) //-> resuelve 1280, 720 A6 y 1080x1440 S5
                 //.setRequestedPreviewSize(1280, 720) //default 1024x768 1280x720, 320x240
                 .setRequestedFps(15.0f) //60.0f 15.0f
-                .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
-                //.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH)
                 .build();
+
+//        mCameraSource = new CameraSource.Builder(context, detector) //detector
+//                .setFacing(CameraSource.CAMERA_FACING_BACK)
+//                //.setRequestedPreviewSize(1024, 768)
+//                .setRequestedPreviewSize(1600, 1024) //-> resuelve 1280, 720 A6 y 1080x1440 S5
+//                //.setRequestedPreviewSize(1280, 720) //default 1024x768 1280x720, 320x240
+//                .setRequestedFps(15.0f) //60.0f 15.0f
+//                .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
+//                //.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH)
+//                .build();
     }
 
     public void saveOnDisk(String pathname, byte[] data) {

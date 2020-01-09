@@ -3,6 +3,8 @@ package frameblock.vision.geometric;
 import android.graphics.Point;
 import android.graphics.Rect;
 
+import java.util.Arrays;
+
 /**
  * representa una pligono encontrada en una imagen
  */
@@ -73,5 +75,16 @@ public class Polygon {
 
     public float getAspectRatio() {
         return aspectRatio;
+    }
+
+    @Override
+    public String toString() {
+        return "Polygon{" +
+                "cornerPoints=" + Arrays.toString(cornerPoints) +
+                ", verticalDiff=" + verticalDiff +
+                ", horizontalDiff=" + horizontalDiff +
+                ", aspectRatio=" + aspectRatio +
+                ", boundingBox=" + boundingBox +
+                '}';
     }
 }

@@ -102,4 +102,19 @@ public class YuvUtil {
             }
         }
     }
+
+    /**
+     * Calcula un valor de focus de la imagen, mientras mas alto, mejor focus
+     * La tecnica es dividir la imagen en regiones cuadradas de ksize y la calcular la varianza laplaciana por
+     * cada una de ellas, el resultado es el valor de la region mejor enfocada de la imagen.
+     * @param image
+     * @param width
+     * @param height
+     * @param roi area de la imagen a escanear
+     * @param ksize tamano en pixeles del kernel, tanto para x como para y (normal 50, max 300)
+     * @return
+     */
+    public static native float segmentedFocusScore(byte[] image, int width, int height, Rect roi, int ksize);
+
+
 }

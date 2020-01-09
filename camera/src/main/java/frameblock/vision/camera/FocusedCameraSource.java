@@ -16,7 +16,7 @@ public class FocusedCameraSource extends CameraSource {
 
     private static final String TAG = "FocusedCameraSource";
 
-    private static final float MIN_FOCUS_SCORE = 12;
+    private static final float MIN_FOCUS_SCORE = 6;
 
     private long mAutoFocusStartedAt;
     private long mAutoFocusCompletedAt;

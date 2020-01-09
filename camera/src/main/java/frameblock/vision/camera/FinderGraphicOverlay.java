@@ -9,18 +9,19 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 
 public class FinderGraphicOverlay<T extends GraphicOverlay.Graphic> extends GraphicOverlay<T> {
-    private static final int GRAVITY_TOP = 1;
-    private static final int GRAVITY_LEFT = 2;
-    private static final int GRAVITY_BOTTOM = 4;
-    private static final int GRAVITY_RIGHT = 8;
+    public static final int GRAVITY_TOP = 1;
+    public static final int GRAVITY_LEFT = 2;
+    public static final int GRAVITY_BOTTOM = 4;
+    public static final int GRAVITY_RIGHT = 8;
 
-    private static final int FINDER_SHAPE_RECTANGLE = 0;
-    private static final int FINDER_SHAPE_CIRCLE = 1;
+    public static final int FINDER_SHAPE_RECTANGLE = 0;
+    public static final int FINDER_SHAPE_CIRCLE = 1;
 
-    private static final float DEFAULT_ASPECT_RATIO = 0f;
-    private static final int DEFAULT_MARGIN = 0;
+    private static final float DEFAULT_ASPECT_RATIO = 1f;
+    private static final int DEFAULT_MARGIN_DP = 20;
     private static final int DEFAULT_GRAVITY = GRAVITY_TOP | GRAVITY_RIGHT | GRAVITY_BOTTOM | GRAVITY_LEFT;
     private static final int DEFAULT_CORNER_RADIUS = 35;
 
@@ -42,7 +43,8 @@ public class FinderGraphicOverlay<T extends GraphicOverlay.Graphic> extends Grap
         super(context, attrs);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FinderGraphicOverlay);
-        mMargin = a.getDimensionPixelSize(R.styleable.FinderGraphicOverlay_finder_margin, DEFAULT_MARGIN);
+        mMargin = a.getDimensionPixelSize(R.styleable.FinderGraphicOverlay_finder_margin,
+                (int)(DEFAULT_MARGIN_DP * context.getResources().getDisplayMetrics().densityDpi / (float) DisplayMetrics.DENSITY_DEFAULT));
         mGravity = a.getInt(R.styleable.FinderGraphicOverlay_finder_gravity, DEFAULT_GRAVITY);
         mFinderColor = a.getColor(R.styleable.FinderGraphicOverlay_finder_color, getResources().getColor(R.color.finder_color));
         mFinderMaskColor = a.getColor(R.styleable.FinderGraphicOverlay_finder_maskColor, -1);
@@ -186,5 +188,72 @@ public class FinderGraphicOverlay<T extends GraphicOverlay.Graphic> extends Grap
      */
     public Rect getFinder() {
         return mFinderRoi;
+    }
+
+
+    public float getAspectRatio() {
+        return mAspectRatio;
+    }
+
+    public void setAspectRatio(float aspectRatio) {
+        this.mAspectRatio = aspectRatio;
+    }
+
+    public int getMargin() {
+        return mMargin;
+    }
+
+    public void setMargin(int margin) {
+        this.mMargin = margin;
+    }
+
+    public int getGravity() {
+        return mGravity;
+    }
+
+    public void setGravity(int gravity) {
+        this.mGravity = gravity;
+    }
+
+    public int getFinderColor() {
+        return mFinderColor;
+    }
+
+    public void setFinderColor(int finderColor) {
+        this.mFinderColor = finderColor;
+        mDrawFinderPaint.setColor(mFinderColor);
+    }
+
+    public int getFinderMaskColor() {
+        return mFinderMaskColor;
+    }
+
+    public void setFinderMaskColor(int finderMaskColor) {
+        this.mFinderMaskColor = finderMaskColor;
+        mDrawMaskPaint.setColor(mFinderMaskColor);
+    }
+
+    public int getFinderCornerRadius() {
+        return mFinderCornerRadius;
+    }
+
+    public void setFinderCornerRadius(int finderCornerRadius) {
+        this.mFinderCornerRadius = finderCornerRadius;
+    }
+
+    public int getFinderShape() {
+        return mFinderShape;
+    }
+
+    public void setFinderShape(int finderShape) {
+        this.mFinderShape = finderShape;
+    }
+
+    public void setDrawFinderPaint(Paint drawFinderPaint) {
+        this.mDrawFinderPaint = drawFinderPaint;
+    }
+
+    public void setDrawMaskPaint(Paint drawMaskPaint) {
+        this.mDrawMaskPaint = drawMaskPaint;
     }
 }

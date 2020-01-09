@@ -934,6 +934,7 @@ public class CameraSource {
                 parameters.getSupportedPictureSizes();
         List<SizePair> validPreviewSizes = new ArrayList<>();
         for (Camera.Size previewSize : supportedPreviewSizes) {
+            Log.d(TAG, "previewSize (w,h): " + previewSize.width + "," + previewSize.height);
             float previewAspectRatio = (float) previewSize.width / (float) previewSize.height;
 
             // By looping through the picture sizes in order, we favor the higher resolutions.

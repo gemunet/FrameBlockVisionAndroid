@@ -47,7 +47,10 @@ public class ImageBlurrinesActivity extends AppCompatActivity {
                 frameHigh.getWidth(), frameHigh.getHeight(), roiHigh);
         float blur1 = YuvUtil.nativeMotionBlur(frameHigh.getYuvData(),
                 frameHigh.getWidth(), frameHigh.getHeight(), roiHigh);
-        tvHigh.setText(("focus: " + focus1 + "\n blur: " + blur1));
+        float score = YuvUtil.segmentedFocusScore(frameHigh.getYuvData(),
+                frameHigh.getWidth(), frameHigh.getHeight(),
+                new Rect(0, 0, frameHigh.getWidth(), frameHigh.getHeight()), 50);
+        tvHigh.setText(("focus: " + focus1 + "\n blur: " + blur1 + "\n segmented: " + score));
 
         Bitmap bmOverlay = bmHigh.copy(bmHigh.getConfig(), true);
         Canvas canvas = new Canvas(bmOverlay);

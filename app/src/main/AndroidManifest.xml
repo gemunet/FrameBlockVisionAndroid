@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ImageWarpActivity"></activity>
+        <activity android:name=".CameraSnapshotActivity"></activity>
+        <activity android:name=".ImageWarpActivity" />
         <activity android:name=".ImageBlurrinesActivity" />
         <activity android:name=".CameraToolActivity" />
         <activity android:name=".QuadToolActivity" />

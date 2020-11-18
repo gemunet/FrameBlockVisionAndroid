@@ -129,6 +129,7 @@ public class CameraSource {
      * See {@link Frame.Metadata#getRotation()}.
      */
     private int mRotation;
+    private int mDisplayAngle;
 
     private Size mPreviewSize;
 
@@ -1029,20 +1030,23 @@ public class CameraSource {
         Camera.getCameraInfo(cameraId, cameraInfo);
 
         int angle;
-        int displayAngle;
         if (cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT) {
             angle = (cameraInfo.orientation + degrees) % 360;
-            displayAngle = (360 - angle) % 360; // compensate for it being mirrored
+            mDisplayAngle = (360 - angle) % 360; // compensate for it being mirrored
         } else {  // back-facing
             angle = (cameraInfo.orientation - degrees + 360) % 360;
-            displayAngle = angle;
+            mDisplayAngle = angle;
         }
 
         // This corresponds to the rotation constants in {@link Frame}.
         mRotation = angle / 90;
 
-        camera.setDisplayOrientation(displayAngle);
+        camera.setDisplayOrientation(mDisplayAngle);
         parameters.setRotation(angle);
+    }
+
+    public int getDisplayOrientation() {
+        return mDisplayAngle;
     }
 
     /**

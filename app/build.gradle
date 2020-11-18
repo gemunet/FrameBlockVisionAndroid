@@ -23,7 +23,7 @@ android {
     }
     sourceSets {
         main {
-            jniLibs.srcDirs '/home/gemu/Android/OpenCV-android-sdk-contrib/sdk/native/libs'
+            jniLibs.srcDirs 'D://OpenCV-android-sdk-contrib/sdk/native/libs'
         }
     }
 }

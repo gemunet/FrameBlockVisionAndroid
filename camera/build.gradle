@@ -5,7 +5,7 @@ apply plugin: 'com.novoda.bintray-release'
 ext {
     mvnGroupId = 'lab.glogic.frameblock'
     mvnArtifactId = 'vision-camera'
-    mvnVersionName = '1.1.0'
+    mvnVersionName = '1.2.0'
 }
 
 buildscript {
@@ -54,6 +54,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -69,6 +70,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

@@ -49,5 +49,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button btnTakePhoto = findViewById(R.id.btnTakePhoto);
+        btnTakePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, CameraSnapshotActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

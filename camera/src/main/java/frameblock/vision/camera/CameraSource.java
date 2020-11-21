@@ -595,7 +595,9 @@ public class CameraSource {
      * @return true if FlashLight is set On, false if otherwise
      */
     public boolean toggleFlashLight() {
-        if(getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH)) {
+        if(mFlashMode == null) return false;
+
+        if(mFlashMode.equals(Camera.Parameters.FLASH_MODE_TORCH)) {
             setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
             return false;
         } else {
@@ -788,8 +790,8 @@ public class CameraSource {
         setRotation(camera, parameters, requestedCameraId);
 
         if (mFocusMode != null) {
-            if (parameters.getSupportedFocusModes().contains(
-                    mFocusMode)) {
+            Log.d(TAG, "Camera focus modes: " + parameters.getSupportedFocusModes());
+            if (parameters.getSupportedFocusModes().contains(mFocusMode)) {
                 parameters.setFocusMode(mFocusMode);
             } else {
                 Log.i(TAG, "Camera focus mode: " + mFocusMode + " is not supported on this device.");
@@ -801,8 +803,7 @@ public class CameraSource {
 
         if (mFlashMode != null) {
             if (parameters.getSupportedFlashModes() != null) {
-                if (parameters.getSupportedFlashModes().contains(
-                        mFlashMode)) {
+                if (parameters.getSupportedFlashModes().contains(mFlashMode)) {
                     parameters.setFlashMode(mFlashMode);
                 } else {
                     Log.i(TAG, "Camera flash mode: " + mFlashMode + " is not supported on this device.");

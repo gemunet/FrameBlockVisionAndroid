@@ -59,6 +59,7 @@ public class CameraResult implements Parcelable {
         File outputFile = File.createTempFile("image", "jpeg");
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile));
         image.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        image.recycle();
         out.flush();
         out.close();
 

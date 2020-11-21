@@ -5,7 +5,7 @@ apply plugin: 'com.novoda.bintray-release'
 ext {
     mvnGroupId = 'lab.glogic.frameblock'
     mvnArtifactId = 'vision-camera'
-    mvnVersionName = '1.2.0'
+    mvnVersionName = '1.2.1'
 }
 
 buildscript {

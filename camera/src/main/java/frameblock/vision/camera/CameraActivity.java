@@ -1,13 +1,18 @@
 package frameblock.vision.camera;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -21,7 +26,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
@@ -29,6 +37,9 @@ import com.google.android.gms.vision.Frame;
 import java.io.IOException;
 
 public class CameraActivity extends AppCompatActivity {
+    private static final String[] permissions = {Manifest.permission.CAMERA};
+    public static final int CAMERA_PERMISSION_REQUEST = 100;
+
     public static final String CAMERA_RESULT = "CAMERA_RESULT";
 
     public static final String CAMERA_FACING_FRONT = "user";
@@ -55,6 +66,41 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
 
         initialize();
+//        startPreview();
+        validatePermissions();
+    }
+
+    private void validatePermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA }, CAMERA_PERMISSION_REQUEST);
+        } else {
+            startPreview();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startPreview();
+            }  else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.camera_permission_denied);
+//                        .setTitle(R.string.dialog_title);
+                builder.setPositiveButton(R.string.camera_grant_permission, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        validatePermissions();
+                    }
+                });
+                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -97,6 +143,20 @@ public class CameraActivity extends AppCompatActivity {
             });
         }
 
+        final ImageButton btnFlashLight = findViewById(R.id.btnFlashLight);
+        if(btnFlashLight != null) {
+            btnFlashLight.setVisibility(setting.flashLightButtonVisible ? View.VISIBLE : View.GONE);
+            btnFlashLight.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mCameraSource.toggleFlashLight()) {
+                        btnFlashLight.setImageResource(R.drawable.ic_flash_on_24dp);
+                    } else {
+                        btnFlashLight.setImageResource(R.drawable.ic_flash_off_24dp);
+                    }
+                }
+            });
+        }
 
         ImageView btnSnapshot = findViewById(R.id.btnSnapshot);
         if(btnSnapshot != null) {
@@ -130,8 +190,6 @@ public class CameraActivity extends AppCompatActivity {
                 }
             });
         }
-
-        startPreview();
     }
 
     public void takeSnapshot(boolean autofocus) {
@@ -159,46 +217,101 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void takeSnapshot(){
-        mCameraSource.takePicture(null, new CameraSource.PictureCallback() {
-            @Override
-            public void onPictureTaken(byte[] data) {
-                Bitmap fullImage = BitmapFactory.decodeByteArray(data, 0, data.length);
-                float szFactor = fullImage.getWidth() / (float)mCameraSource.getPreviewSize().getWidth();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+                mCameraSource.takePicture(null, new CameraSource.PictureCallback() {
+                    @Override
+                    public void onPictureTaken(final byte[] data) {
+                        processPicture(data);
+                    }
+                });
+//            }
+//        }).start();
+    }
 
-                Matrix m = new Matrix();
-                Log.d("ROTATION", ""+mCameraSource.getDisplayOrientation());
-                if(mCameraSource.getCameraFacing() == CameraSource.CAMERA_FACING_FRONT) {
-                    m.setRotate(-mCameraSource.getDisplayOrientation());
-                    m.postScale(-1, 1);
-                } else {
-                    m.setRotate(mCameraSource.getDisplayOrientation());
+    private void processPicture(byte[] data) {
+        Log.d("UITHREAD", ""+(Looper.getMainLooper().getThread() == Thread.currentThread()));
+        Log.d("ZDATA size", ""+data.length);
+
+        //Bitmap fullImage = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+        Bitmap tempImage = decodeSampledBitmapFromResource(data, setting.requestWidth, setting.requestHeight);
+
+        Log.d("ZDATA fullImage", ""+tempImage.getByteCount() + ": " + tempImage.getWidth() + "," + tempImage.getHeight());
+
+        float szFactor = tempImage.getWidth() / (float)mCameraSource.getPreviewSize().getWidth();
+
+        Matrix m = new Matrix();
+        Log.d("ROTATION", ""+mCameraSource.getDisplayOrientation());
+        if(mCameraSource.getCameraFacing() == CameraSource.CAMERA_FACING_FRONT) {
+            m.setRotate(-mCameraSource.getDisplayOrientation());
+            m.postScale(-1, 1);
+        } else {
+            m.setRotate(mCameraSource.getDisplayOrientation());
+        }
+
+
+        // Full Image
+        Bitmap fullImage = Bitmap.createBitmap(tempImage, 0, 0, tempImage.getWidth(), tempImage.getHeight(), m, true);
+
+        // Cropped Image
+        Rect roi = mGraphicOverlay.getScaledFinder();
+        Bitmap croppedImage = Bitmap.createBitmap(fullImage, (int) (roi.left * szFactor), (int) (roi.top * szFactor),
+                (int) (roi.width() * szFactor), (int) (roi.height() * szFactor));
+
+        try {
+            final Intent resultData = new Intent();
+            resultData.putExtra(CAMERA_RESULT, new CameraResult(fullImage, croppedImage));
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    success(RESULT_OK, resultData);
                 }
+            });
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-                // Full Image
-                fullImage = Bitmap.createBitmap(fullImage, 0, 0, fullImage.getWidth(), fullImage.getHeight(), m, true);
+    public static Bitmap decodeSampledBitmapFromResource(byte[] data,
+                                                         int reqWidth, int reqHeight) {
 
-                // Cropped Image
-                Rect roi = mGraphicOverlay.getScaledFinder();
-                Bitmap croppedImage = Bitmap.createBitmap(fullImage, (int) (roi.left * szFactor), (int) (roi.top * szFactor),
-                        (int) (roi.width() * szFactor), (int) (roi.height() * szFactor));
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(data, 0, data.length, options);
 
-                try {
-                    final Intent resultData = new Intent();
-                    resultData.putExtra(CAMERA_RESULT, new CameraResult(fullImage, croppedImage));
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                           success(RESULT_OK, resultData);
-                        }
-                  });
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeByteArray(data, 0, data.length, options);
+    }
 
-                }catch (IOException e) {
-                    e.printStackTrace();
-                }
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
             }
-        });
+        }
+
+        return inSampleSize;
     }
 
     @Override
@@ -244,8 +357,14 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void startPreview() {
-        mCameraSource = createCameraSource(mCameraFacing);
-        startCameraSource();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mCameraSource = createCameraSource(mCameraFacing);
+
+                startCameraSource();
+            }
+        }).start();
     }
 
     public void toggleCamera() {
@@ -272,6 +391,7 @@ public class CameraActivity extends AppCompatActivity {
                 //.setRequestedPreviewSize(1280, 720) //default 1024x768 1280x720, 320x240
                 .setRequestedFps(15.0f) //60.0f 15.0f
                 .setFacing(cameraFacing)
+                .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)
                 .build();
 
         return cameraSource;
@@ -320,6 +440,9 @@ public class CameraActivity extends AppCompatActivity {
         private boolean finderVisible = true;
         private int finderShape = FINDER_SHAPE_CIRCLE;
         private float finderAspectRatio = 1;
+        private boolean flashLightButtonVisible = false;
+        private int requestWidth = 600;
+        private int requestHeight = 600;
 
         public Setting() {};
 
@@ -335,6 +458,9 @@ public class CameraActivity extends AppCompatActivity {
             finderVisible = in.readByte() != 0;
             finderShape = in.readInt();
             finderAspectRatio = in.readFloat();
+            flashLightButtonVisible = in.readByte() != 0;
+            requestWidth = in.readInt();
+            requestHeight = in.readInt();
         }
 
         @Override
@@ -349,6 +475,9 @@ public class CameraActivity extends AppCompatActivity {
             dest.writeByte((byte) (finderVisible ? 1 : 0));
             dest.writeInt(finderShape);
             dest.writeFloat(finderAspectRatio);
+            dest.writeByte((byte) (flashLightButtonVisible ? 1 : 0));
+            dest.writeInt(requestWidth);
+            dest.writeInt(requestHeight);
         }
 
         @Override
@@ -415,6 +544,17 @@ public class CameraActivity extends AppCompatActivity {
 
         public Setting finderAspectRatio(float finderAspectRatio) {
             this.finderAspectRatio = finderAspectRatio;
+            return this;
+        }
+
+        public Setting flashLightButtonVisible(boolean flashLightButtonVisible) {
+            this.flashLightButtonVisible = flashLightButtonVisible;
+            return this;
+        }
+
+        public Setting scaleSize(int requestWidth, int requestHeight) {
+            this.requestWidth = requestWidth;
+            this.requestHeight = requestHeight;
             return this;
         }
     }

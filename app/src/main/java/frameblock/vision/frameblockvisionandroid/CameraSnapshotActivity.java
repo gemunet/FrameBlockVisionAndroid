@@ -20,6 +20,7 @@ import frameblock.vision.camera.CameraResult;
 
 public class CameraSnapshotActivity extends AppCompatActivity {
     private final static int CAMERA_REQUEST = 1;
+    private final static int CAMERA_DETECTOR_REQUEST = 2;
 
     private ImageView ivPhoto;
 
@@ -47,9 +48,30 @@ public class CameraSnapshotActivity extends AppCompatActivity {
                 setting.finderVisible(true);
                 setting.finderShape(CameraActivity.FINDER_SHAPE_RECTANGLE);
                 setting.finderAspectRatio(1.57f);
-
+                setting.scaleSize(0, 600);
                 intent.putExtra(CameraActivity.SETTING, setting);
                 startActivityForResult(intent, CAMERA_REQUEST);
+            }
+        });
+
+        Button btnDetector = findViewById(R.id.btnDetector);
+        btnDetector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CameraSnapshotActivity.this, CameraDetectorActivity.class);
+
+                CameraActivity.Setting setting = new CameraActivity.Setting();
+                setting.message("Escanea el código QR/PDF417 de la cédula");
+                setting.snapshotButtonVisible(false);
+                setting.cameraFacing(CameraActivity.CAMERA_FACING_BACK);
+                setting.flashLightButtonVisible(true);
+                setting.forceAutoFocus(true);
+                setting.finderVisible(true);
+                setting.finderShape(CameraActivity.FINDER_SHAPE_RECTANGLE);
+                setting.finderAspectRatio(1.57f);
+
+                intent.putExtra(CameraActivity.SETTING, setting);
+                startActivityForResult(intent, CAMERA_DETECTOR_REQUEST);
             }
         });
 
@@ -71,7 +93,16 @@ public class CameraSnapshotActivity extends AppCompatActivity {
                 ivPhoto.setImageBitmap(bitmap);
 
             } else {
-                Toast.makeText(this,"Resultado failed", Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"Cancelado", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        if(requestCode == CAMERA_DETECTOR_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                String rut = data.getStringExtra(CameraDetectorActivity.DETECTOR_RESULT_RUT);
+                Toast.makeText(this,"RUT " + rut, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this,"Cancelado", Toast.LENGTH_LONG).show();
             }
         }
 

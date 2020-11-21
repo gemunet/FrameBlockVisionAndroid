@@ -84,6 +84,18 @@
         app:srcCompat="@drawable/ic_camera_black_24dp" />
 
     <ImageButton
+        android:id="@+id/btnFlashLight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@id/btnToggle"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="?android:selectableItemBackground"
+        app:srcCompat="@drawable/ic_flash_off_24dp" />
+
+    <ImageButton
         android:id="@+id/btnToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

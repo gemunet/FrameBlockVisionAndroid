@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
-apply plugin: 'com.novoda.bintray-release'
 
 ext {
     mvnGroupId = 'lab.glogic.frameblock'
     mvnArtifactId = 'vision-camera'
-    mvnVersionName = '1.2.1'
+    mvnVersionName = '1.2.3'
 }
 
 buildscript {
@@ -13,19 +13,39 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.novoda:bintray-release:0.9.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
     }
 }
 
-publish {
-    userOrg = 'gemunet'
-    repoName = 'frameblock'
-    groupId = mvnGroupId
-    artifactId = mvnArtifactId
-    publishVersion = mvnVersionName
-    repository = 'https://github.com/gemunet/FrameBlockVisionAndroid.git'
-    desc = 'Camera Android library'
+bintray {
+    user = 'gemunet'
+    key = 'b1f14465b85ee34312cd09f2f7cd266456bdbd75'
+    publications = ['maven']
+    publish = true
+    override = true
+    pkg {
+        repo = 'frameblock'
+        name = mvnArtifactId
+        desc = 'Camera Android library'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/gemunet/FrameBlockVisionAndroid.git'
+        publicDownloadNumbers = true
+        version {
+            name = mvnVersionName
+            released = new Date()
+        }
+    }
 }
+
+//publish {
+//    userOrg = 'gemunet'
+//    repoName = 'frameblock'
+//    groupId = mvnGroupId
+//    artifactId = mvnArtifactId
+//    publishVersion = mvnVersionName
+//    repository = 'https://github.com/gemunet/FrameBlockVisionAndroid.git'
+//    desc = 'Camera Android library'
+//}
 
 publishing {
     repositories {

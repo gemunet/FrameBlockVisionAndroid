@@ -51,7 +51,8 @@ public class CameraDetectorActivity extends CameraActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        success(RESULT_OK, resultData);
+                        setResult(RESULT_OK, resultData);
+                        finish();
                     }
                 });
             }

@@ -259,14 +259,20 @@ public class CameraActivity extends AppCompatActivity {
         Bitmap croppedImage = Bitmap.createBitmap(fullImage, (int) (roi.left * szFactor), (int) (roi.top * szFactor),
                 (int) (roi.width() * szFactor), (int) (roi.height() * szFactor));
 
+        processResult(fullImage, croppedImage);
+    }
+
+    protected void processResult(Bitmap fullImage, Bitmap croppedImage) {
         try {
+
             final Intent resultData = new Intent();
             resultData.putExtra(CAMERA_RESULT, new CameraResult(fullImage, croppedImage));
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    success(RESULT_OK, resultData);
+                    setResult(RESULT_OK, resultData);
+                    finish();
                 }
             });
 
@@ -402,11 +408,6 @@ public class CameraActivity extends AppCompatActivity {
         CustomProcessor mProcessor = new CustomProcessor();
         detector.setProcessor(mProcessor);
         return detector;
-    }
-
-    protected void success(final int result, final Intent resultData) {
-        setResult(result, resultData);
-        finish();
     }
 
     public static class CustomDetector extends Detector {

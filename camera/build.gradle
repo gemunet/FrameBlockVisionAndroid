@@ -5,7 +5,7 @@ apply plugin: 'maven-publish'
 ext {
     mvnGroupId = 'lab.glogic.frameblock'
     mvnArtifactId = 'vision-camera'
-    mvnVersionName = '1.2.3'
+    mvnVersionName = '1.2.4'
 }
 
 buildscript {
